@@ -16,9 +16,6 @@ const Navbar = () => {
             <div className="hidden md:flex space-x-6">
               <Link to="/" className="text-gray-700 hover:text-gray-900 font-medium">Home</Link>
               <Link to="/about" className="text-gray-700 hover:text-gray-900 font-medium">About</Link>
-              <Link to="#" className="text-gray-700 hover:text-gray-900 font-medium">Rent</Link>
-              <Link to="#" className="text-gray-700 hover:text-gray-900 font-medium">Sell</Link>
-              <Link to="#" className="text-gray-700 hover:text-gray-900 font-medium">Mortgage</Link>
               <Link to="/advertise" className="text-gray-700 hover:text-gray-900 font-medium">Advertise</Link>
             </div>
           </div>
@@ -29,7 +26,7 @@ const Navbar = () => {
               <Link to="#" className="text-gray-700 hover:text-gray-900 font-medium">Manage rentals</Link>
             </div>
 
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors font-medium">
+            <button className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-900 transition-colors font-medium">
               Login
             </button>
 

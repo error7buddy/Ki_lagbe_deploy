@@ -1,17 +1,28 @@
-// src/Components/Auth/PrivateRoute.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { auth } from "../../Firebase/config";
 
 const PrivateRoute = ({ children }) => {
-  const user = auth.currentUser; // Check if user is logged in
+  const [loading, setLoading] = useState(true); // wait until Firebase initializes
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+
+    return () => unsubscribe(); // cleanup listener
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>; // or a spinner
+  }
 
   if (!user) {
-    // Not logged in, redirect to login page
     return <Navigate to="/auth" replace />;
   }
 
-  // Logged in, render the protected content
   return children;
 };
 

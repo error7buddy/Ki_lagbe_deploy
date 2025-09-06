@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // for redirect
 import { auth } from "../../Firebase/config";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 
 const AuthForm = () => {
+  const navigate = useNavigate(); // navigate hook
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({ email: "", password: "", confirmPassword: "" });
   const [errors, setErrors] = useState({});
@@ -44,6 +46,9 @@ const AuthForm = () => {
         await createUserWithEmailAndPassword(auth, formData.email, formData.password);
         alert("Account created successfully!");
       }
+
+      // ✅ Redirect to Home page after login/signup
+      navigate("/home"); 
     } catch (error) {
       setErrors({ submit: error.message });
     } finally {
