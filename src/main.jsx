@@ -4,7 +4,6 @@ import {
   createBrowserRouter,
   RouterProvider,
   Navigate,
-  Outlet,
 } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./Firebase/config";
@@ -14,9 +13,11 @@ import Home from "./Components/Home/Home";
 import About from "./Components/About/About";
 import Advertise_home from "./Components/Advertise/Advertise_home";
 import AuthForm from "./Components/Auth/AuthForm";
+import Login from "./Components/Auth/Login";   // ✅ Admin login page
+import AdminPage from "./Components/Admin/AdminPage"; // ✅ Admin panel
 import "./index.css";
 
-// ✅ Protected Route Wrapper
+// Protected Route (for advertise)
 const ProtectedRoute = ({ children }) => {
   const [user, setUser] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
@@ -34,32 +35,14 @@ const ProtectedRoute = ({ children }) => {
   return user ? children : <Navigate to="/auth" replace />;
 };
 
-// ✅ Router setup
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     children: [
-      {
-        index: true, // default route
-        element: <Navigate to="/auth" replace />,
-      },
-      {
-        path: "home",
-        element: (
-          <ProtectedRoute>
-            <Home />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "about",
-        element: (
-          <ProtectedRoute>
-            <About />
-          </ProtectedRoute>
-        ),
-      },
+      { index: true, element: <Navigate to="/home" replace /> },
+      { path: "home", element: <Home /> },
+      { path: "about", element: <About /> },
       {
         path: "advertise",
         element: (
@@ -68,15 +51,13 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      {
-        path: "auth",
-        element: <AuthForm />,
-      },
+      { path: "auth", element: <AuthForm /> },
+      { path: "login", element: <Login /> },        // 👈 Admin Login page
+      { path: "admin", element: <AdminPage /> },    // 👈 Admin Dashboard
     ],
   },
 ]);
 
-// ✅ Render App
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>

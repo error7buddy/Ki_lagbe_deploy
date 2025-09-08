@@ -4,135 +4,103 @@ import axios from "axios";
 export default function Advertise_home() {
   const [formData, setFormData] = useState({
     title: "",
-    description: "",
     address: "",
-    bhk: "1BHK",
-    images: [],
+    bhk: "",
+    description: "",
   });
-  const [imagePreviews, setImagePreviews] = useState([]);
-  const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
+  const [images, setImages] = useState([]);
+  const [message, setMessage] = useState("");
 
-  const handleInputChange = e => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    if (errors[name]) setErrors(prev => ({ ...prev, [name]: "" }));
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleImageChange = e => {
-    const files = Array.from(e.target.files);
-    setFormData(prev => ({ ...prev, images: files }));
-
-    const previews = files.map(file => URL.createObjectURL(file));
-    setImagePreviews(previews);
+  const handleImageChange = (e) => {
+    setImages(e.target.files);
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const newErrors = {};
-    if (!formData.title.trim()) newErrors.title = "Title required";
-    if (!formData.address.trim()) newErrors.address = "Address required";
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
 
     const data = new FormData();
-    data.append("title", formData.title);
-    data.append("description", formData.description);
-    data.append("address", formData.address);
-    data.append("bhk", formData.bhk);
-    formData.images.forEach(file => data.append("images", file));
+    Object.entries(formData).forEach(([key, value]) => {
+      data.append(key, value);
+    });
+    for (let i = 0; i < images.length; i++) {
+      data.append("images", images[i]);
+    }
 
     try {
-      setLoading(true);
-      const res = await axios.post("http://localhost:5000/api/advertisements", data);
-      alert(res.data.message);
-      setFormData({ title: "", description: "", address: "", bhk: "1BHK", images: [] });
-      setImagePreviews([]);
-    } catch (err) {
-      alert(err.response?.data?.error || err.message);
-    } finally {
-      setLoading(false);
+      await axios.post("http://localhost:5000/api/advertisements", data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setMessage("✅ Advertisement posted successfully!");
+      setFormData({ title: "", address: "", bhk: "", description: "" });
+      setImages([]);
+    } catch (error) {
+      console.error("Error posting ad:", error);
+      setMessage("❌ Failed to post advertisement.");
     }
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6 mt-16 bg-white rounded-lg shadow-md">
-      <h1 className="text-xl font-bold mb-4">Advertise Home Post</h1>
+    <div className="max-w-2xl mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-6">Post an Advertisement</h1>
+
+      {message && <p className="mb-4 text-center text-red-600">{message}</p>}
+
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Title */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Title *</label>
-          <input
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleInputChange}
-            className={`w-full px-2 py-1 border rounded-md ${errors.title ? "border-red-500" : "border-gray-300"}`}
-          />
-          {errors.title && <p className="text-red-600 text-xs">{errors.title}</p>}
-        </div>
+        <input
+          type="text"
+          name="title"
+          placeholder="Title"
+          value={formData.title}
+          onChange={handleChange}
+          className="w-full border p-2 rounded"
+          required
+        />
 
-        {/* Address */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Address *</label>
-          <input
-            type="text"
-            name="address"
-            value={formData.address}
-            onChange={handleInputChange}
-            className={`w-full px-2 py-1 border rounded-md ${errors.address ? "border-red-500" : "border-gray-300"}`}
-          />
-          {errors.address && <p className="text-red-600 text-xs">{errors.address}</p>}
-        </div>
+        <input
+          type="text"
+          name="address"
+          placeholder="Address"
+          value={formData.address}
+          onChange={handleChange}
+          className="w-full border p-2 rounded"
+          required
+        />
 
-        {/* BHK Dropdown */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">BHK</label>
-          <select
-            name="bhk"
-            value={formData.bhk}
-            onChange={handleInputChange}
-            className="w-full px-2 py-1 border rounded-md"
-          >
-            <option>1BHK</option>
-            <option>2BHK</option>
-            <option>3BHK</option>
-            <option>4BHK</option>
-          </select>
-        </div>
+        <input
+          type="text"
+          name="bhk"
+          placeholder="BHK (e.g. 2BHK)"
+          value={formData.bhk}
+          onChange={handleChange}
+          className="w-full border p-2 rounded"
+          required
+        />
 
-        {/* Description */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Description</label>
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleInputChange}
-            rows={3}
-            className="w-full px-2 py-1 border rounded-md"
-          />
-        </div>
+        <textarea
+          name="description"
+          placeholder="Description"
+          value={formData.description}
+          onChange={handleChange}
+          className="w-full border p-2 rounded"
+          required
+        />
 
-        {/* Images */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Images</label>
-          <input type="file" multiple onChange={handleImageChange} />
-          <div className="flex space-x-2 mt-2">
-            {imagePreviews.map((src, idx) => (
-              <img key={idx} src={src} className="w-16 h-16 object-cover rounded" />
-            ))}
-          </div>
-        </div>
+        <input
+          type="file"
+          multiple
+          onChange={handleImageChange}
+          className="w-full border p-2 rounded"
+        />
 
         <button
           type="submit"
-          disabled={loading}
-          className="px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+          className="w-full bg-black text-white p-2 rounded hover:bg-gray-800"
         >
-          {loading ? "Saving..." : "Create"}
+          Post Ad
         </button>
       </form>
     </div>

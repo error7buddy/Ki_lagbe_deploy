@@ -1,7 +1,22 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { auth } from "../Firebase/config";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 
 const Navbar = () => {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await signOut(auth);
+  };
+
   return (
     <nav className="bg-white shadow-sm border-b">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -20,15 +35,33 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* Right side - Business Links and Login */}
+          {/* Right side - User / Login */}
           <div className="flex items-center space-x-6">
             <div className="hidden md:flex space-x-6">
-              <Link to="#" className="text-gray-700 hover:text-gray-900 font-medium">Manage rentals</Link>
+              <Link to="#" className="text-gray-700 hover:text-gray-900 font-medium">Shifiting</Link>
             </div>
 
-            <button className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-900 transition-colors font-medium">
-              Login
-            </button>
+            {user ? (
+              <div className="flex items-center space-x-4">
+                {/* ✅ Show first 5 chars of email */}
+                <span className="font-semibold text-gray-700">
+                  {user.email.substring(0, 5)}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors font-medium"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/auth"
+                className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-900 transition-colors font-medium"
+              >
+                Login
+              </Link>
+            )}
 
             <button className="md:hidden">
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
