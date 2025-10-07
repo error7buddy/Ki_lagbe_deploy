@@ -4,6 +4,15 @@ import mysql from "mysql2";
 import multer from "multer";
 import path from "path";
 
+
+import fs from "fs";
+
+// Create uploads folder if it doesn't exist
+const uploadDir = "./uploads";
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+  console.log("✅ Created uploads folder");
+}
 const app = express();
 app.use(cors());
 app.use(express.json());
