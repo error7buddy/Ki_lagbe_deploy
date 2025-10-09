@@ -35,7 +35,6 @@ const AdminPage = () => {
     try {
       const res = await fetch(`http://localhost:5000/api/advertisements/${id}`, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
       });
 
       const data = await res.json();
@@ -62,8 +61,8 @@ const AdminPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {ads.map((ad) => (
             <div key={ad.id} className="p-4 border rounded-lg shadow bg-white">
-              <h2 className="text-xl font-bold">{ad.title}</h2>
-              <p>{ad.description}</p>
+              <h2 className="text-xl font-bold mb-2">{ad.title}</h2>
+              <p className="text-gray-700 mb-2">{ad.description}</p>
               {ad.images &&
                 JSON.parse(ad.images).map((img, i) => (
                   <img
