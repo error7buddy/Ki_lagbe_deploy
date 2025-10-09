@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { auth } from "../../Firebase/config"; // import Firebase auth
 
 export default function Advertise_home() {
   const [formData, setFormData] = useState({
@@ -22,24 +23,36 @@ export default function Advertise_home() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const user = auth.currentUser; // ✅ Get Firebase user
+    if (!user) {
+      setMessage("Please log in first!");
+      return;
+    }
+
     const data = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      data.append(key, value);
-    });
+    Object.entries(formData).forEach(([key, value]) => data.append(key, value));
     for (let i = 0; i < images.length; i++) {
       data.append("images", images[i]);
     }
 
+    data.append("user_id", user.uid); // ✅ Use Firebase UID
+
     try {
-      await axios.post("http://localhost:5000/api/advertisements", data, {
+      const res = await axios.post("http://localhost:5000/api/advertisements", data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      setMessage("✅ Advertisement posted successfully!");
+
+      if (res.data.limitReached) {
+        setMessage("⚠️ Free ad limit reached. Please upgrade to Premium!");
+      } else {
+        setMessage("✅ Ad posted successfully!");
+      }
+
       setFormData({ title: "", address: "", bhk: "", description: "" });
       setImages([]);
     } catch (error) {
       console.error("Error posting ad:", error);
-      setMessage("❌ Failed to post advertisement.");
+      setMessage("❌ Failed to post ad.");
     }
   };
 

@@ -13,11 +13,15 @@ const AdminPage = () => {
     }
   }, [navigate]);
 
-  // Fetch ads
+  // Fetch all ads
   const fetchAds = async () => {
-    const res = await fetch("http://localhost:5000/api/advertisements");
-    const data = await res.json();
-    setAds(data);
+    try {
+      const res = await fetch("http://localhost:5000/api/advertisements");
+      const data = await res.json();
+      setAds(data);
+    } catch (error) {
+      console.error("Error fetching ads:", error);
+    }
   };
 
   useEffect(() => {
@@ -27,12 +31,24 @@ const AdminPage = () => {
   // Delete ad
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this ad?")) return;
-    const res = await fetch(`http://localhost:5000/api/advertisements/${id}`, {
-      method: "DELETE",
-    });
-    const data = await res.json();
-    if (data.success) {
-      setAds((prev) => prev.filter((ad) => ad.id !== id));
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/advertisements/${id}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setAds((prev) => prev.filter((ad) => ad.id !== id));
+        alert("✅ Ad deleted successfully!");
+      } else {
+        alert("❌ Failed to delete ad.");
+      }
+    } catch (error) {
+      console.error("Error deleting ad:", error);
+      alert("Error deleting ad. Check console.");
     }
   };
 
