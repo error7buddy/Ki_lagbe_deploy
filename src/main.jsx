@@ -15,10 +15,11 @@ import Advertise_home from "./Components/Advertise/Advertise_home";
 import AuthForm from "./Components/Auth/AuthForm";
 import Login from "./Components/Auth/Login";   // ✅ Admin login page
 import AdminPage from "./Components/Admin/AdminPage"; // ✅ Admin panel
-import "./index.css";
 import Shifting from "./Components/Shifting/Shifting";
+import BookShifting from "./Components/Shifting/BookShifting"; // ✅ Booking page
+import "./index.css";
 
-// Protected Route (for advertise)
+// ✅ Protected Route (for advertise)
 const ProtectedRoute = ({ children }) => {
   const [user, setUser] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
@@ -36,6 +37,7 @@ const ProtectedRoute = ({ children }) => {
   return user ? children : <Navigate to="/auth" replace />;
 };
 
+// ✅ Router Setup
 const router = createBrowserRouter([
   {
     path: "/",
@@ -53,9 +55,10 @@ const router = createBrowserRouter([
         ),
       },
       { path: "shifting", element: <Shifting /> },
+      { path: "book-shifting/:id", element: <BookShifting /> }, // 👈 NEW route for booking form
       { path: "auth", element: <AuthForm /> },
-      { path: "login", element: <Login /> },        // 👈 Admin Login page
-      { path: "admin", element: <AdminPage /> },    // 👈 Admin Dashboard
+      { path: "login", element: <Login /> },
+      { path: "admin", element: <AdminPage /> },
     ],
   },
 ]);

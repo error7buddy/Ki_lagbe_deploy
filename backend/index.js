@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
-// ✅ Create uploads folder if missing
+// ✅ Ensure uploads folder exists
 const uploadDir = "./uploads";
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
@@ -30,58 +30,71 @@ db.connect((err) => {
 // ✅ Multer setup
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/"),
-  filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname)),
+  filename: (req, file, cb) =>
+    cb(null, Date.now() + path.extname(file.originalname)),
 });
 const upload = multer({ storage });
 
-/* ----------------------------------------
-/* ----------------------------------------
- ✅ POST an Advertisement (with phone)
----------------------------------------- */
+/* =====================================================
+ ✅ POST an Advertisement
+===================================================== */
 app.post("/api/advertisements", upload.array("images", 5), async (req, res) => {
-  const { title, houseNo, area, district, bhk, description, user_id, phone } = req.body; // ✅ added phone
+  const { title, houseNo, area, district, bhk, description, user_id, phone } =
+    req.body;
   const images = req.files ? req.files.map((f) => f.path) : [];
 
-  if (!user_id) return res.status(400).json({ success: false, error: "Missing user_id" });
+  if (!user_id)
+    return res.status(400).json({ success: false, error: "Missing user_id" });
 
   try {
-    // ✅ Check if user exists
     const [rows] = await db
       .promise()
-      .query("SELECT ads_left, is_unlimited FROM users WHERE user_id = ?", [user_id]);
+      .query("SELECT ads_left, is_unlimited FROM users WHERE user_id = ?", [
+        user_id,
+      ]);
     let user = rows[0];
 
     if (!user) {
       await db
         .promise()
-        .query("INSERT INTO users (user_id, ads_left, is_unlimited) VALUES (?, ?, ?)", [
-          user_id,
-          1,
-          0,
-        ]);
+        .query(
+          "INSERT INTO users (user_id, ads_left, is_unlimited) VALUES (?, ?, ?)",
+          [user_id, 1, 0]
+        );
       user = { ads_left: 1, is_unlimited: 0 };
     }
 
-    // ✅ Check ad credit limit
     if (!user.is_unlimited && user.ads_left <= 0) {
-      return res.status(403).json({ success: false, error: "No ads left. Please buy ad credits." });
+      return res
+        .status(403)
+        .json({ success: false, error: "No ads left. Please buy credits." });
     }
 
-    // ✅ Insert new ad (includes phone)
     await db
       .promise()
       .query(
         `INSERT INTO advertisements 
         (title, houseNo, area, district, bhk, description, phone, images, user_id) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [title, houseNo, area, district, bhk, description, phone, JSON.stringify(images), user_id]
+        [
+          title,
+          houseNo,
+          area,
+          district,
+          bhk,
+          description,
+          phone,
+          JSON.stringify(images),
+          user_id,
+        ]
       );
 
-    // ✅ Deduct one ad credit (if not unlimited)
     if (!user.is_unlimited) {
-      await db.promise().query("UPDATE users SET ads_left = ads_left - 1 WHERE user_id = ?", [
-        user_id,
-      ]);
+      await db
+        .promise()
+        .query("UPDATE users SET ads_left = ads_left - 1 WHERE user_id = ?", [
+          user_id,
+        ]);
     }
 
     res.json({ success: true, message: "Ad posted successfully!" });
@@ -91,48 +104,45 @@ app.post("/api/advertisements", upload.array("images", 5), async (req, res) => {
   }
 });
 
-/* ----------------------------------------
- ✅ GET All Advertisements
----------------------------------------- */
+/* =====================================================
+ ✅ GET / DELETE Ads
+===================================================== */
 app.get("/api/advertisements", (req, res) => {
   db.query("SELECT * FROM advertisements ORDER BY id DESC", (err, results) => {
     if (err)
-      return res.status(500).json({ success: false, error: "Failed to fetch advertisements" });
+      return res
+        .status(500)
+        .json({ success: false, error: "Failed to fetch advertisements" });
     res.json(results);
   });
 });
 
-/* ----------------------------------------
- ✅ DELETE Advertisement
----------------------------------------- */
 app.delete("/api/advertisements/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    // First get the images for deletion
-    const [rows] = await db.promise().query("SELECT images FROM advertisements WHERE id = ?", [id]);
+    const [rows] = await db
+      .promise()
+      .query("SELECT images FROM advertisements WHERE id = ?", [id]);
     const ad = rows[0];
-    if (!ad) return res.status(404).json({ success: false, error: "Ad not found" });
+    if (!ad) return res.status(404).json({ success: false, error: "Not found" });
 
-    // Delete images from disk
     const imagePaths = JSON.parse(ad.images || "[]");
     imagePaths.forEach((imgPath) => {
       if (fs.existsSync(imgPath)) fs.unlinkSync(imgPath);
     });
 
-    // Delete the ad from DB
     await db.promise().query("DELETE FROM advertisements WHERE id = ?", [id]);
-
     res.json({ success: true, message: "Ad deleted successfully" });
   } catch (err) {
     console.error("❌ Error deleting ad:", err);
-    res.status(500).json({ success: false, error: "Failed to delete advertisement" });
+    res.status(500).json({ success: false, error: "Delete failed" });
   }
 });
 
-/* ----------------------------------------
+/* =====================================================
  ✅ BUY Ad Credits
----------------------------------------- */
+===================================================== */
 app.post("/api/buy-ads", async (req, res) => {
   const { user_id, packType, method } = req.body;
   if (!user_id || !packType || !method)
@@ -156,7 +166,6 @@ app.post("/api/buy-ads", async (req, res) => {
   }
 
   try {
-    // Ensure user exists
     await db
       .promise()
       .query("INSERT IGNORE INTO users (user_id, ads_left, is_unlimited) VALUES (?, 0, 0)", [
@@ -164,12 +173,16 @@ app.post("/api/buy-ads", async (req, res) => {
       ]);
 
     if (isUnlimited) {
-      await db.promise().query("UPDATE users SET is_unlimited = 1 WHERE user_id = ?", [user_id]);
+      await db
+        .promise()
+        .query("UPDATE users SET is_unlimited = 1 WHERE user_id = ?", [user_id]);
     } else {
-      await db.promise().query(
-        "UPDATE users SET ads_left = ads_left + ? WHERE user_id = ?",
-        [adsToAdd, user_id]
-      );
+      await db
+        .promise()
+        .query("UPDATE users SET ads_left = ads_left + ? WHERE user_id = ?", [
+          adsToAdd,
+          user_id,
+        ]);
     }
 
     res.json({ success: true, message: "Purchase successful!" });
@@ -179,7 +192,82 @@ app.post("/api/buy-ads", async (req, res) => {
   }
 });
 
-/* ----------------------------------------
+/* =====================================================
+ ✅ SHIFTING ORDERS
+===================================================== */
+
+// ➕ Add a new shifting order
+app.post("/api/shifting-orders", (req, res) => {
+  const {
+    name,
+    phone,
+    from_location,
+    from_floor,
+    to_location,
+    to_floor,
+    shift_type,
+    date,
+    message,
+  } = req.body;
+
+  if (!name || !phone || !from_location || !to_location || !shift_type) {
+    return res.status(400).json({ success: false, message: "Missing fields" });
+  }
+
+  const sql = `INSERT INTO shifting_orders 
+    (name, phone, from_location, from_floor, to_location, to_floor, shift_type, date, message, status)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending')`;
+
+  db.query(
+    sql,
+    [name, phone, from_location, from_floor, to_location, to_floor, shift_type, date, message],
+    (err, result) => {
+      if (err) {
+        console.error("❌ Error inserting order:", err);
+        return res.status(500).json({ success: false, message: "Server error" });
+      }
+      res.json({ success: true, message: "✅ Shifting order submitted!" });
+    }
+  );
+});
+
+// 📥 Get all orders
+app.get("/api/shifting-orders", (req, res) => {
+  db.query("SELECT * FROM shifting_orders ORDER BY id DESC", (err, results) => {
+    if (err) {
+      console.error("❌ Error fetching orders:", err);
+      return res.status(500).json({ success: false, message: "Server error" });
+    }
+    res.json(results);
+  });
+});
+
+// ❌ Delete order
+app.delete("/api/shifting-orders/:id", (req, res) => {
+  const { id } = req.params;
+  db.query("DELETE FROM shifting_orders WHERE id = ?", [id], (err, result) => {
+    if (err) {
+      console.error("❌ Error deleting order:", err);
+      return res.status(500).json({ success: false, message: "Server error" });
+    }
+    res.json({ success: true });
+  });
+});
+
+// ✅ Mark as completed
+app.put("/api/shifting-orders/:id/complete", (req, res) => {
+  const { id } = req.params;
+  const sql = "UPDATE shifting_orders SET status = 'Completed' WHERE id = ?";
+  db.query(sql, [id], (err, result) => {
+    if (err) {
+      console.error("❌ Error updating order status:", err);
+      return res.status(500).json({ success: false, message: "Server error" });
+    }
+    res.json({ success: true, message: "Order marked as completed" });
+  });
+});
+
+/* =====================================================
  ✅ START SERVER
----------------------------------------- */
-app.listen(5000, () => console.log("🚀 Server running on port 5000"));
+===================================================== */
+app.listen(5000, () => console.log("✅ Server running on port 5000"));

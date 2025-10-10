@@ -24,7 +24,7 @@ const Navbar = () => {
           {/* Left side - Logo and Navigation Links */}
           <div className="flex items-center space-x-8">
             <div className="flex-shrink-0 text-2xl font-bold text-gray-900">
-              合Basa Lagbe?
+              🏘️Basa Lagbe?
             </div>
 
             {/* Desktop Navigation Links */}
@@ -38,7 +38,7 @@ const Navbar = () => {
           {/* Right side - User / Login */}
           <div className="flex items-center space-x-6">
             <div className="hidden md:flex space-x-6">
-              <Link to="/shifting" className="text-gray-700 hover:text-gray-900 font-medium">Shifting</Link>
+              <Link to="/shifting" className="flex-shrink-0 text-2xl font-bold text-gray-900">:🚚Pickup Lagbe?</Link>
             </div>
 
             {user ? (
