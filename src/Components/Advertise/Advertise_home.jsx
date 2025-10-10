@@ -5,10 +5,14 @@ import { auth } from "../../Firebase/config";
 export default function Advertise_home() {
   const [formData, setFormData] = useState({
     title: "",
-    address: "",
+    houseNo: "",
+    area: "",
+    district: "",
     bhk: "",
     description: "",
+    phone: "", // ✅ Added phone field
   });
+
   const [images, setImages] = useState([]);
   const [message, setMessage] = useState("");
   const [showBuyPopup, setShowBuyPopup] = useState(false);
@@ -16,7 +20,9 @@ export default function Advertise_home() {
   const [selectedPack, setSelectedPack] = useState("");
   const [selectedMethod, setSelectedMethod] = useState("");
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+
   const handleImageChange = (e) => setImages(e.target.files);
 
   const handleSubmit = async (e) => {
@@ -34,10 +40,21 @@ export default function Advertise_home() {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      if (res.data.success) setMessage("✅ Ad posted successfully!");
-      else setMessage(res.data.error || "⚠️ Something went wrong.");
-      setFormData({ title: "", address: "", bhk: "", description: "" });
-      setImages([]);
+      if (res.data.success) {
+        setMessage("✅ Ad posted successfully!");
+        setFormData({
+          title: "",
+          houseNo: "",
+          area: "",
+          district: "",
+          bhk: "",
+          description: "",
+          phone: "",
+        });
+        setImages([]);
+      } else {
+        setMessage(res.data.error || "⚠️ Something went wrong.");
+      }
     } catch (error) {
       console.error("Error posting ad:", error);
       if (error.response?.status === 403) {
@@ -78,19 +95,95 @@ export default function Advertise_home() {
 
   return (
     <div className="max-w-2xl mx-auto p-6 relative">
-      <h1 className="text-2xl font-bold mb-6">Post an Advertisement</h1>
+      <h1 className="text-2xl font-bold mb-6 text-center">Post an Advertisement</h1>
       {message && <p className="text-center text-red-600 mb-4">{message}</p>}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input name="title" placeholder="Title" value={formData.title} onChange={handleChange} className="w-full border p-2 rounded" required />
-        <input name="address" placeholder="Address" value={formData.address} onChange={handleChange} className="w-full border p-2 rounded" required />
-        <input name="bhk" placeholder="BHK (e.g. 2BHK)" value={formData.bhk} onChange={handleChange} className="w-full border p-2 rounded" required />
-        <textarea name="description" placeholder="Description" value={formData.description} onChange={handleChange} className="w-full border p-2 rounded" required />
-        <input type="file" multiple onChange={handleImageChange} className="w-full border p-2 rounded" />
-        <button type="submit" className="w-full bg-black text-white p-2 rounded hover:bg-gray-800">Post Ad</button>
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <input
+          name="title"
+          placeholder="Title"
+          value={formData.title}
+          onChange={handleChange}
+          className="w-full border p-2 rounded"
+          required
+        />
+
+        {/* Address Section */}
+        <div className="border rounded-lg p-4 bg-gray-50">
+          <h3 className="font-semibold mb-3 text-gray-700">Address</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <input
+              name="houseNo"
+              placeholder="House No."
+              value={formData.houseNo}
+              onChange={handleChange}
+              className="border p-2 rounded"
+              required
+            />
+            <input
+              name="area"
+              placeholder="Area"
+              value={formData.area}
+              onChange={handleChange}
+              className="border p-2 rounded"
+              required
+            />
+            <input
+              name="district"
+              placeholder="District"
+              value={formData.district}
+              onChange={handleChange}
+              className="border p-2 rounded"
+              required
+            />
+          </div>
+        </div>
+
+        <input
+          name="bhk"
+          placeholder="BHK (e.g. 2BHK)"
+          value={formData.bhk}
+          onChange={handleChange}
+          className="w-full border p-2 rounded"
+          required
+        />
+
+        <textarea
+          name="description"
+          placeholder="Description"
+          value={formData.description}
+          onChange={handleChange}
+          className="w-full border p-2 rounded"
+          required
+        />
+
+        {/* ✅ Phone Number */}
+        <input
+          name="phone"
+          placeholder="Phone Number"
+          value={formData.phone}
+          onChange={handleChange}
+          className="w-full border p-2 rounded"
+          required
+          type="tel"
+        />
+
+        <input
+          type="file"
+          multiple
+          onChange={handleImageChange}
+          className="w-full border p-2 rounded"
+        />
+
+        <button
+          type="submit"
+          className="w-full bg-black text-white p-2 rounded hover:bg-gray-800"
+        >
+          Post Ad
+        </button>
       </form>
 
-      {/* Buy Ads Popup */}
+      {/* Existing Buy + Payment Popups (unchanged) */}
       {showBuyPopup && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-sm z-50">
           <div className="bg-white shadow-2xl rounded-2xl p-6 w-80 border border-gray-200">
@@ -105,7 +198,6 @@ export default function Advertise_home() {
         </div>
       )}
 
-      {/* Payment Popup */}
       {showPaymentPopup && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50">
           <div className="bg-white shadow-2xl rounded-2xl p-6 w-80">
@@ -126,7 +218,9 @@ export default function Advertise_home() {
               ))}
             </div>
             <div className="flex justify-between mt-5">
-              <button onClick={() => setShowPaymentPopup(false)} className="px-3 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
+              <button onClick={() => setShowPaymentPopup(false)} className="px-3 py-2 bg-gray-300 rounded hover:bg-gray-400">
+                Cancel
+              </button>
               <button
                 onClick={handlePaymentConfirm}
                 disabled={!selectedMethod}

@@ -35,16 +35,17 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 /* ----------------------------------------
- ✅ POST an Advertisement
+/* ----------------------------------------
+ ✅ POST an Advertisement (with phone)
 ---------------------------------------- */
 app.post("/api/advertisements", upload.array("images", 5), async (req, res) => {
-  const { title, address, bhk, description, user_id } = req.body;
+  const { title, houseNo, area, district, bhk, description, user_id, phone } = req.body; // ✅ added phone
   const images = req.files ? req.files.map((f) => f.path) : [];
 
   if (!user_id) return res.status(400).json({ success: false, error: "Missing user_id" });
 
   try {
-    // Get or create user
+    // ✅ Check if user exists
     const [rows] = await db
       .promise()
       .query("SELECT ads_left, is_unlimited FROM users WHERE user_id = ?", [user_id]);
@@ -61,20 +62,22 @@ app.post("/api/advertisements", upload.array("images", 5), async (req, res) => {
       user = { ads_left: 1, is_unlimited: 0 };
     }
 
-    // Check limit
+    // ✅ Check ad credit limit
     if (!user.is_unlimited && user.ads_left <= 0) {
       return res.status(403).json({ success: false, error: "No ads left. Please buy ad credits." });
     }
 
-    // Insert ad
+    // ✅ Insert new ad (includes phone)
     await db
       .promise()
       .query(
-        "INSERT INTO advertisements (title, address, bhk, description, images, user_id) VALUES (?, ?, ?, ?, ?, ?)",
-        [title, address, bhk, description, JSON.stringify(images), user_id]
+        `INSERT INTO advertisements 
+        (title, houseNo, area, district, bhk, description, phone, images, user_id) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [title, houseNo, area, district, bhk, description, phone, JSON.stringify(images), user_id]
       );
 
-    // Deduct credit
+    // ✅ Deduct one ad credit (if not unlimited)
     if (!user.is_unlimited) {
       await db.promise().query("UPDATE users SET ads_left = ads_left - 1 WHERE user_id = ?", [
         user_id,

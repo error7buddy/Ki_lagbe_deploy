@@ -38,7 +38,7 @@ const Navbar = () => {
           {/* Right side - User / Login */}
           <div className="flex items-center space-x-6">
             <div className="hidden md:flex space-x-6">
-              <Link to="#" className="text-gray-700 hover:text-gray-900 font-medium">Shifiting</Link>
+              <Link to="/shifting" className="text-gray-700 hover:text-gray-900 font-medium">Shifting</Link>
             </div>
 
             {user ? (

@@ -16,6 +16,7 @@ import AuthForm from "./Components/Auth/AuthForm";
 import Login from "./Components/Auth/Login";   // ✅ Admin login page
 import AdminPage from "./Components/Admin/AdminPage"; // ✅ Admin panel
 import "./index.css";
+import Shifting from "./Components/Shifting/Shifting";
 
 // Protected Route (for advertise)
 const ProtectedRoute = ({ children }) => {
@@ -51,6 +52,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      { path: "shifting", element: <Shifting /> },
       { path: "auth", element: <AuthForm /> },
       { path: "login", element: <Login /> },        // 👈 Admin Login page
       { path: "admin", element: <AdminPage /> },    // 👈 Admin Dashboard
