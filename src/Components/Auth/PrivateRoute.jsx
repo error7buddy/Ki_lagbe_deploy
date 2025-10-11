@@ -3,7 +3,7 @@ import { Navigate } from "react-router-dom";
 import { auth } from "../../Firebase/config";
 
 const PrivateRoute = ({ children }) => {
-  const [loading, setLoading] = useState(true); // wait until Firebase initializes
+  const [loading, setLoading] = useState(true); 
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -12,11 +12,11 @@ const PrivateRoute = ({ children }) => {
       setLoading(false);
     });
 
-    return () => unsubscribe(); // cleanup listener
+    return () => unsubscribe(); 
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>; // or a spinner
+    return <div>Loading...</div>;
   }
 
   if (!user) {

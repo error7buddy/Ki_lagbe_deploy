@@ -55,7 +55,7 @@ const router = createBrowserRouter([
         ),
       },
       { path: "shifting", element: <Shifting /> },
-      { path: "book-shifting/:id", element: <BookShifting /> }, // 👈 NEW route for booking form
+      { path: "book-shifting/:id", element: <BookShifting /> }, // 
       { path: "auth", element: <AuthForm /> },
       { path: "login", element: <Login /> },
       { path: "admin", element: <AdminPage /> },
