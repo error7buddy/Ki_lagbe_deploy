@@ -24,7 +24,7 @@ const Navbar = () => {
           {/* Left side - Logo and Navigation Links */}
           <div className="flex items-center space-x-8">
             <div className="flex-shrink-0 text-2xl font-bold text-gray-900">
-              🏘️Basa Lagbe?
+              কী লাগবে.com?
             </div>
 
             {/* Desktop Navigation Links */}
@@ -49,7 +49,7 @@ const Navbar = () => {
                 </span>
                 <button
                   onClick={handleLogout}
-                  className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors font-medium"
+                  className="bg-black text-white px-4 py-2 rounded-md hover:bg-white hover:text-black border transition-colors font-medium"
                 >
                   Logout
                 </button>

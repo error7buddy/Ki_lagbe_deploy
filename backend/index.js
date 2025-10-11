@@ -10,11 +10,11 @@ app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
-// ✅ Ensure uploads folder exists
+
 const uploadDir = "./uploads";
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
-// ✅ MySQL connection
+// db connection
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
@@ -23,11 +23,11 @@ const db = mysql.createConnection({
 });
 
 db.connect((err) => {
-  if (err) console.error("❌ Database connection failed:", err);
-  else console.log("✅ Connected to MySQL");
+  if (err) console.error("Database connection failed:", err);
+  else console.log(" Connected to MySQL");
 });
 
-// ✅ Multer setup
+//Multer setup
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/"),
   filename: (req, file, cb) =>
@@ -36,7 +36,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 /* =====================================================
- ✅ POST an Advertisement
+ POST an Advertisement
 ===================================================== */
 app.post("/api/advertisements", upload.array("images", 5), async (req, res) => {
   const { title, houseNo, area, district, bhk, description, user_id, phone } =
@@ -104,8 +104,8 @@ app.post("/api/advertisements", upload.array("images", 5), async (req, res) => {
   }
 });
 
-/* =====================================================
- ✅ GET / DELETE Ads
+/*=====================================================
+ GET / DELETE Ads
 ===================================================== */
 app.get("/api/advertisements", (req, res) => {
   db.query("SELECT * FROM advertisements ORDER BY id DESC", (err, results) => {
@@ -135,13 +135,13 @@ app.delete("/api/advertisements/:id", async (req, res) => {
     await db.promise().query("DELETE FROM advertisements WHERE id = ?", [id]);
     res.json({ success: true, message: "Ad deleted successfully" });
   } catch (err) {
-    console.error("❌ Error deleting ad:", err);
+    console.error(" Error deleting ad:", err);
     res.status(500).json({ success: false, error: "Delete failed" });
   }
 });
 
 /* =====================================================
- ✅ BUY Ad Credits
+ BUY Ad Credits
 ===================================================== */
 app.post("/api/buy-ads", async (req, res) => {
   const { user_id, packType, method } = req.body;
@@ -193,7 +193,7 @@ app.post("/api/buy-ads", async (req, res) => {
 });
 
 /* =====================================================
- ✅ SHIFTING ORDERS
+SHIFTING ORDERS
 ===================================================== */
 
 // ➕ Add a new shifting order
@@ -223,10 +223,10 @@ app.post("/api/shifting-orders", (req, res) => {
     [name, phone, from_location, from_floor, to_location, to_floor, shift_type, date, message],
     (err, result) => {
       if (err) {
-        console.error("❌ Error inserting order:", err);
+        console.error("Error inserting order:", err);
         return res.status(500).json({ success: false, message: "Server error" });
       }
-      res.json({ success: true, message: "✅ Shifting order submitted!" });
+      res.json({ success: true, message: "Shifting order submitted!" });
     }
   );
 });
@@ -235,32 +235,32 @@ app.post("/api/shifting-orders", (req, res) => {
 app.get("/api/shifting-orders", (req, res) => {
   db.query("SELECT * FROM shifting_orders ORDER BY id DESC", (err, results) => {
     if (err) {
-      console.error("❌ Error fetching orders:", err);
+      console.error("Error fetching orders:", err);
       return res.status(500).json({ success: false, message: "Server error" });
     }
     res.json(results);
   });
 });
 
-// ❌ Delete order
+// Delete order
 app.delete("/api/shifting-orders/:id", (req, res) => {
   const { id } = req.params;
   db.query("DELETE FROM shifting_orders WHERE id = ?", [id], (err, result) => {
     if (err) {
-      console.error("❌ Error deleting order:", err);
+      console.error("Error deleting order:", err);
       return res.status(500).json({ success: false, message: "Server error" });
     }
     res.json({ success: true });
   });
 });
 
-// ✅ Mark as completed
+// Mark as completed
 app.put("/api/shifting-orders/:id/complete", (req, res) => {
   const { id } = req.params;
   const sql = "UPDATE shifting_orders SET status = 'Completed' WHERE id = ?";
   db.query(sql, [id], (err, result) => {
     if (err) {
-      console.error("❌ Error updating order status:", err);
+      console.error(" Error updating order status:", err);
       return res.status(500).json({ success: false, message: "Server error" });
     }
     res.json({ success: true, message: "Order marked as completed" });
@@ -268,6 +268,6 @@ app.put("/api/shifting-orders/:id/complete", (req, res) => {
 });
 
 /* =====================================================
- ✅ START SERVER
+ START SERVER
 ===================================================== */
-app.listen(5000, () => console.log("✅ Server running on port 5000"));
+app.listen(5000, () => console.log("Server running on port 5000"));

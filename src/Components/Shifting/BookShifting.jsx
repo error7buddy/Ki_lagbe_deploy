@@ -36,6 +36,7 @@ const BookShifting = () => {
   };
 
   return (
+    <div><br /><br /><br /><br />
     <div className="p-6 max-w-lg mx-auto bg-white rounded shadow">
       <h2 className="text-2xl font-bold mb-4">Book a Shifting Service</h2>
       <form onSubmit={handleSubmit} className="space-y-3">
@@ -106,10 +107,14 @@ const BookShifting = () => {
           onChange={handleChange}
           className="w-full p-2 border rounded"
         />
-        <button className="w-full bg-green-600 text-white p-2 rounded">
+        <button className="w-full bg-black text-white px-4 py-2 rounded-md hover:bg-white hover:text-black border transition p-2 ">
           Submit Booking
         </button>
       </form>
+      
+      
+    </div>
+    <br /><br /><br /><br />
     </div>
   );
 };

@@ -81,6 +81,7 @@ export default function PaymentMethodsCarousel() {
   };
 
   return (
+    <div>
     <div className="max-w-6xl mx-auto px-6 py-12 bg-gradient-to-b from-gray-50 to-white">
       <h2 className="text-3xl font-extrabold text-center text-gray-800 mb-10">
         💳 Choose Your Payment Method
@@ -101,13 +102,15 @@ export default function PaymentMethodsCarousel() {
               <p className="text-sm text-gray-600 mt-2 h-12">
                 {method.description}
               </p>
-              <button className="mt-6 w-full bg-blue-700 text-white py-2 rounded-lg hover:bg-white hover:text-blue-700 border border-blue-700 transition">
+              <button className="mt-6 w-full bg-black text-white py-2 rounded-lg hover:bg-white hover:text-black border border-black transition">
                 Use {method.name}
               </button>
             </div>
           </div>
         ))}
       </Slider>
+    </div>
+    <br /><br /><br /><br /><br />
     </div>
   );
 }

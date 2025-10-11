@@ -4,7 +4,7 @@ import axios from "axios";
 export default function AdvertisementList() {
   const [ads, setAds] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [visibleCount, setVisibleCount] = useState(3); // show 3 initially
+  const [visibleCount, setVisibleCount] = useState(6); // show 3 initially
 
   useEffect(() => {
     axios
@@ -95,7 +95,7 @@ export default function AdvertisementList() {
               prev >= ads.length ? 3 : prev + 5 // reveal 5 more or reset
             )
           }
-          className="mt-6 flex items-center gap-2 text-blue-600 font-semibold hover:text-blue-800"
+          className="mt-6 flex items-center gap-2 text-white font-semibold p-1 pr-5 pl-5 rounded-xl bg-black hover:bg-gray-900 transition-colors"
         >
           {visibleCount >= ads.length ? "↑ See Less" : "↓ See More"}
         </button>

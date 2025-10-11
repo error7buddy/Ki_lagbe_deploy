@@ -4,19 +4,19 @@ import multer from "multer";
 
 const router = express.Router();
 
-// Configure Multer for multiple images
+// Confi for multiple images
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/"),
   filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
 });
 const upload = multer({ storage });
 
-// MySQL connection
+// db connection
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "",
-  database: "my_app_db", // must match the DB you created
+  database: "my_app_db", 
 });
 
 db.connect((err) => {
@@ -24,7 +24,7 @@ db.connect((err) => {
   console.log("MySQL connected");
 });
 
-// POST: save advertisement
+// POST: advertisement
 router.post("/", upload.array("images", 5), (req, res) => {
   const { title, description, address, bhk } = req.body;
   const images = req.files.map((file) => file.filename);

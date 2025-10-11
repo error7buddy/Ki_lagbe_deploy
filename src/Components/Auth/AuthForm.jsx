@@ -158,7 +158,7 @@ const AuthForm = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+            className="w-full py-2 px-4 bg-black text-white px-4 py-2 rounded-md hover:bg-white hover:text-black border transition disabled:opacity-50"
           >
             {loading ? "Processing..." : isLogin ? "Sign In" : "Sign Up"}
           </button>

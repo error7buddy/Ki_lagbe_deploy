@@ -10,7 +10,7 @@ export default function Advertise_home() {
     district: "",
     bhk: "",
     description: "",
-    phone: "", // ✅ Added phone field
+    phone: "", 
   });
 
   const [images, setImages] = useState([]);
@@ -41,7 +41,7 @@ export default function Advertise_home() {
       });
 
       if (res.data.success) {
-        setMessage("✅ Ad posted successfully!");
+        setMessage("Ad posted successfully!");
         setFormData({
           title: "",
           houseNo: "",
@@ -53,12 +53,12 @@ export default function Advertise_home() {
         });
         setImages([]);
       } else {
-        setMessage(res.data.error || "⚠️ Something went wrong.");
+        setMessage(res.data.error || "Something went wrong.");
       }
     } catch (error) {
       console.error("Error posting ad:", error);
       if (error.response?.status === 403) {
-        setMessage("⚠️ No ads left. Please buy more ads.");
+        setMessage("No ads left. Please buy more ads.");
         setShowBuyPopup(true);
       } else setMessage("❌ Failed to post advertisement.");
     }
@@ -81,19 +81,21 @@ export default function Advertise_home() {
       });
 
       if (res.data.success) {
-        setMessage("✅ Purchase successful! You can post more ads now.");
+        setMessage("Purchase successful! You can post more ads now.");
         setShowBuyPopup(false);
         setShowPaymentPopup(false);
       } else {
-        alert("❌ Payment failed. Try again.");
+        alert("Payment failed. Try again.");
       }
     } catch (err) {
       console.error("Payment error:", err);
-      alert("⚠️ Payment error. Try again later.");
+      alert("Payment error. Try again later.");
     }
   };
 
   return (
+    <div>
+      <br /><br /><br /><br />
     <div className="max-w-2xl mx-auto p-6 relative">
       <h1 className="text-2xl font-bold mb-6 text-center">Post an Advertisement</h1>
       {message && <p className="text-center text-red-600 mb-4">{message}</p>}
@@ -157,7 +159,7 @@ export default function Advertise_home() {
           required
         />
 
-        {/* ✅ Phone Number */}
+        {/* Phone Number */}
         <input
           name="phone"
           placeholder="Phone Number"
@@ -234,6 +236,8 @@ export default function Advertise_home() {
           </div>
         </div>
       )}
+    </div>
+    <br /><br /><br /><br /><br />
     </div>
   );
 }

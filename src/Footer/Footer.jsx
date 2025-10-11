@@ -2,10 +2,10 @@ import React from 'react';
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-100 border-t">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <footer className="bg-gray-100 border-t  ">
+      <div className="max-w-100% mx-auto px-4 sm:px-6 lg:px-8 py-10 ">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10 pl-100">
           
           {/* Column 1 */}
           <div>
@@ -53,25 +53,30 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Column 4 - Optional future links */}
           <div></div>
         </div>
 
         {/* Legal Text */}
-        <div className="border-t pt-6 text-xs text-gray-600 space-y-3">
-          <p>
-            Any mortgage lead generation activity in the state of Connecticut is performed by MSM LLC 
-            (<a href="#" className="text-blue-600 hover:underline">link 8.9.2015</a>) a subsidiary of Home Inc.
-          </p>
-          
-          <p>
-            *Based on average over for sale and rental testing into 2014 - Jan 2024.
-          </p>
+    <div className="border-t pt-6 text-xs text-gray-600 space-y-3 text-center">
+  <p>
+    This project was developed collaboratively by <span className="font-medium">Osman Aziz, , Atiur Rahman, and Maisha Maliha</span> — students of 
+    <span className="font-medium"> Vadrendra University</span>.
+  </p>
 
-          <p>
-            © 2024–2025 National Association of MSM-1008 · evi Home, Inc. All rights reserved.
-          </p>
-        </div>
+  <p>
+    Developed as part of the <span className="font-medium">Web Development Final Year Project (2024–2025)</span> 
+    under the supervision of the Department of Computer Science.
+  </p>
+
+  <p>
+    All content and data used in this project are for **educational purposes only** and do not represent any real commercial entity.
+  </p>
+
+  <p>
+    © 2024–2025 <span className="font-medium">Vadrendra University Project Team</span>. All rights reserved.
+  </p>
+</div>
+
       </div>
     </footer>
   );
