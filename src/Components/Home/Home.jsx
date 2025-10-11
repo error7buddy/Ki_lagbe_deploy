@@ -1,6 +1,7 @@
 import React from "react";
 import AdvertisementList from "./AdvertisementsList";
 import PaymentMethodsCarousel from "../Payment/PaymentMethodsCarousel";
+import Review from "./Review";
 
 export default function Home() {
   return (
@@ -11,6 +12,7 @@ export default function Home() {
          <br/>
             <br/>   <br/> 
       <PaymentMethodsCarousel />
+      <Review />
     </div>
   
   );
